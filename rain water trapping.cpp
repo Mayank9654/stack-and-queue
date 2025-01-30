@@ -32,27 +32,16 @@ int rainwatertrapped(vector<int> a)
 
 int rainwatertrappedoptimised(vector<int> a)
 {
-    int lmax=0,rmax=0,total=0,l=0,r=a.size()-1;
-    while(l<r)
-    {
-        if(a[l]<=a[r])
-        {
-            if(lmax>a[l])
-                total+=lmax-a[l];
-            else
-                lmax=a[l];
-            l++;
-        }
-        else
-        {
-            if(rmax>a[r])
-                total+=rmax-a[r];
-            else
-                rmax=a[r];
-            r=r-1;
-        }
-    }
-    return total;
+    int n= a.size();
+    vector<int> maxL(n);
+    vector<int> maxR(n);
+    long long int water=0;
+    maxL[0]=a[0];
+    maxR[n-1]=a[n-1];
+    for(int i=1;i<n;i++) maxL[i]=max(maxL[i-1],a[i]);
+    for(int i=n-2;i>=0;i--) maxR[i]=max(maxR[i+1],a[i]);
+    for(int i=0;i<n;i++) water=water+min(maxL[i],maxR[i])-a[i];
+    return water;
 }
 
 int main()

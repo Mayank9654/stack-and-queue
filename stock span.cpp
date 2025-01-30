@@ -35,69 +35,55 @@ stockSpanner.next(75);  // return 4, because the last 4 prices (including today'
 less than or equal to today's price.
 stockSpanner.next(85);  // return 6
 */
-
 #include <bits/stdc++.h>
 using namespace std;
-
-class stockSpannerbruteforce {
-public:
-    vector<int> a;
-    stockSpannerbruteforce() 
-    {
-    }
-    int next(int val) 
-    {
-        a.push_back(val); // Add the new price to the vector
-        int count = 1; // Start with a span of 1 for the current price
-
-        // Traverse backward through the vector to calculate the span
-        for (int i = a.size() - 2; i >= 0; i--) 
-        { // Start from the second last element
-            if (a[i] <= val) 
-            {
-                count++; // Increment the span if the price is less than or equal to the current price
-            } 
-            else 
-            {
-                break; // Stop when a greater price is found
-            }
-        }
-        return count;
-    }
-};
-
-class stockSpanneroptimised 
+void display(vector<int> &v)
 {
-private:
-    stack<pair<int, int>> st; 
-public:
-    stockSpanneroptimised() 
+    for(int i=0;i<v.size();i++)
     {
+        cout<<v[i]<<" ";
     }
+    cout<<endl;
+}
+
+int main()
+{
+    vector<int>a={100, 80, 60, 70, 60, 75, 85};
+    int n=a.size();
+    vector<int> v;
+    stack<pair<int,int>> s;
     
-    int next(int price) 
+    for(int i = 0;i<n;i++)
     {
-        int span = 1; // Default span for a new price is 1
-        // Calculate span using the stack
-        while (!st.empty() && st.top().first <= price) 
+        if(s.size()==0)
         {
-            span += st.top().second; // Add the span of the popped element
-            st.pop();
+            v.push_back(-1);
         }
-        // Push the current price and its span onto the stack
-        st.push({price, span});
-        return span;
+        else if(s.size()>0&&s.top().first>a[i])
+        {
+            v.push_back(s.top().second);
+        }
+        else{
+            while(s.size()!=0&&s.top().first<=a[i])
+            {
+                s.pop();
+            }
+            if(s.size()==0)
+            {
+                v.push_back(-1);
+            }
+            else
+            {
+                v.push_back(s.top().second);
+            }
+
+        }
+        s.push({a[i],i});
     }
-};
-
-
-int main() 
-{
-    stockSpanneroptimised ob;
-    vector<int> prices = {7,2,1,3,3,1,8};
-    for (int val : prices) 
+    for(int i = 0;i<v.size();i++)
     {
-        cout << ob.next(val) << " ";
+        v[i] = i-v[i];
     }
-    return 0;
+    display(v);
+return 0;
 }

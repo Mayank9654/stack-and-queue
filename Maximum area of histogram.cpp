@@ -3,6 +3,8 @@ Maximum area of a histogram
 */
 #include <bits/stdc++.h>
 using namespace std;
+
+// Utility function to display a vector
 void display(vector<int> &v)
 {
     for (int i = 0; i < v.size(); i++)
@@ -11,97 +13,63 @@ void display(vector<int> &v)
     }
     cout << endl;
 }
-vector<int> nsl(vector<int>a,int n)
+
+// Function to calculate the indices of the previous smaller element for each bar
+vector<int> previous_smaller_element(vector<int> a)
 {
-    vector<int> left;
-    stack<pair<int,int>> s1;
-    for(int i=0;i<n;i++)
+    vector<int> res(a.size());
+    stack<int> s;
+
+    for (int i = 0; i < a.size(); i++)
     {
-        if(s1.size()==0)
-        {
-            left.push_back(-1);
-        }
-        else if(s1.size()!=0&&s1.top().first<a[i])
-        {
-            left.push_back(s1.top().second);
-        }
-        else
-        {
-            while(s1.size()!=0&&s1.top().first>=a[i])
-            {
-                s1.pop();
-            }
-             if (s1.size() == 0)
-            {
-                left.push_back(-1);
-            }
-            else
-            {
-                left.push_back(s1.top().second);
-            }
-        }
-        s1.push({a[i],i});
+        while (!s.empty() && a[s.top()] >= a[i]) 
+            s.pop();
+
+        res[i] = (s.empty()) ? -1 : s.top();
+        s.push(i);
     }
-    display(left);
-    return left;
+    return res;
 }
-vector<int> nsr(vector<int>a, int n)
+
+// Function to calculate the indices of the next smaller element for each bar
+vector<int> next_smaller_element(vector<int> a)
 {
-    vector<int> right;
-    stack<pair<int, int>> s2;
-    for (int i = n - 1; i >= 0; i--)
+    vector<int> res(a.size());
+    stack<int> s;
+
+    for (int i = a.size() - 1; i >= 0; i--)
     {
-        if (s2.size() == 0)
-        {
-            right.push_back(n);
-        }
-        else if (s2.size() != 0 && s2.top().first < a[i])
-        {
-            right.push_back(s2.top().second);
-        }
-        else
-        {
-            while (s2.size() != 0 && s2.top().first >= a[i])
-            {
-                s2.pop();
-            }
-            if (s2.size() == 0)
-            {
-                right.push_back(n);
-            }
-            else
-            {
-                right.push_back(s2.top().second);
-            }
-        }
-        s2.push({a[i], i});
+        while (!s.empty() && a[s.top()] >= a[i]) 
+            s.pop();
+
+        res[i] = (s.empty()) ? a.size() : s.top();  // Set to 'a.size()' if no smaller element exists
+        s.push(i);
     }
-    reverse(right.begin(),right.end());
-    display(right);
-    return right;
+    return res;
 }
-int maxArea(vector<int>a, int n)
+
+// Function to calculate the maximum area of the histogram
+int maxArea(vector<int> a, int n)
 {
-    vector<int> left, right, area, width;
-    left = nsl(a, n);
-    right = nsr(a, n);
+    vector<int> left = previous_smaller_element(a);
+    vector<int> right = next_smaller_element(a);
+
+    int max_area = 0;
+
     for (int i = 0; i < n; i++)
     {
-        width.push_back((right[i] - left[i]) - 1);
+        int width = right[i] - left[i] - 1;  // Calculate width of the rectangle
+        int area = a[i] * width;            // Calculate area of the rectangle
+        max_area = max(max_area, area);     // Update maximum area
     }
-    display(width);
-    for (int i = 0; i < n; i++)
-    {
-        area.push_back (a[i] * width[i]);
-    }
-    display(area);
-    sort(area.begin(), area.end());
-    return area[n - 1];
+    return max_area;
 }
+
+// Driver function
 int main()
 {
-    vector<int> a={5,2,4,7,8};
-    int n=a.size();
-    cout<<maxArea(a,n)<<endl;
+    vector<int> a = {5, 2, 4, 7, 8};
+    int n = a.size();
+    cout << "Maximum Area: " << maxArea(a, n) << endl;
     return 0;
 }
